@@ -3,9 +3,11 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useColorScheme as useColorSchemeCore } from 'react-native';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { darkColors, lightColors } from '@/constants/Colors';
+import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -13,44 +15,66 @@ export {
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [fontsLoaded, error] = useFonts({
+    Rubik: require('../assets/fonts/Rubik-Medium.ttf'),
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+  if (!fontsLoaded) return null;
 
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
+  return (
+    <SettingsProvider>
+      <RootLayoutNav />
+    </SettingsProvider>
+  );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const { settings, loaded: settingsLoaded } = useSettings();
+  const systemScheme = useColorSchemeCore();
+
+  useEffect(() => {
+    if (settingsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [settingsLoaded]);
+
+  const effectiveScheme =
+    settings.colorScheme === 'system'
+      ? systemScheme === 'dark'
+        ? 'dark'
+        : 'light'
+      : settings.colorScheme;
+
+  const colors = effectiveScheme === 'dark' ? darkColors : lightColors;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    <ThemeProvider value={effectiveScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.surface,
+          },
+          headerTintColor: colors.onSurface,
+          headerTitleStyle: {
+            fontFamily: 'Rubik',
+            fontSize: 18,
+            fontWeight: '600',
+          },
+        }}>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+        <Stack.Screen name="game" options={{ title: 'Game' }} />
       </Stack>
     </ThemeProvider>
   );
