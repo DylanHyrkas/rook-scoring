@@ -544,6 +544,8 @@ function makeStyles(c: ColorPalette) {
       fontWeight: '700',
       color: c.primary,
       fontFamily: 'Rubik',
+      userSelect: 'none',
+      pointerEvents: 'none',
     },
     bidWarning: {
       fontSize: 13,

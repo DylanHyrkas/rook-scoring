@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Rook Scoring",
+    "name": "Rook",
     "slug": "rook-scoring",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,6 +28,7 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
+      "name": "Rook"
     },
     "plugins": [
       "expo-router"

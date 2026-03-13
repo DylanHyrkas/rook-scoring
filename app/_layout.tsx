@@ -72,7 +72,7 @@ function RootLayoutNav() {
             fontWeight: '600',
           },
         }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false, title: 'Rook' }} />
         <Stack.Screen name="settings" options={{ title: 'Settings' }} />
         <Stack.Screen name="game" options={{ title: 'Game' }} />
       </Stack>
